@@ -1,7 +1,7 @@
 # rusty-the-robot - The Adventure of rusty the robot
 
 `rusty-the-robot` is a lightweight crate demonstrating clean modular design and Rust trait-based abstraction.  
-It defines a simple **`moveable::Moveable`** trait that allows any type to implement directional movement logic, with an example implementation for a `robot::Robot`.
+It defines a simple **`Moveable`** trait that allows any type to implement directional movement logic, with an example implementation for a `Robot`.
 
 This makes it easy to:
 - Encapsulate motion logic and reuse it across entities
@@ -13,10 +13,10 @@ This makes it easy to:
 
 ## Features
 
-- Directional movement via the `moveable::Direction` enum
-- Error handling with `moveable::MovementError`
-- Pluggable movement logic through the `moveable::Moveable` trait
-- Example `robot::Robot` implementation with position tracking and tests
+- Directional movement via the `Direction` enum
+- Error handling with `MovementError`
+- Pluggable movement logic through the `Moveable` trait
+- Example `Robot` implementation with position tracking and tests
 
 ---
 
@@ -33,3 +33,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{robot}");
     Ok(())
 }
+

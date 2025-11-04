@@ -1,11 +1,11 @@
 //! Movement abstraction traits and supporting types.
 //!
-//! This module defines the [`Moveable`] trait along with
-//! supporting types [`Direction`] and [`MovementError`].
+//! This module defines the [`crate::moveable::Moveable`] trait along with
+//! supporting types [`crate::moveable::Direction`] and [`crate::moveable::MovementError`].
 //! It provides the foundation for controlling objects that
 //! can change their position or state in a directional manner.
 
-/// Defines the direction in which a [`Moveable`] entity can move.
+/// Defines the direction in which a [`crate::moveable::Moveable`] entity can move.
 ///
 /// Each variant represents a logical movement or orientation change.
 ///

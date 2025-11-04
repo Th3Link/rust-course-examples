@@ -1,6 +1,6 @@
-//! Concrete robot implementation using the [`Moveable`] trait.
+//! Concrete robot implementation using the [`crate::moveable::Moveable`] trait.
 //!
-//! The [`Robot`] struct represents a simple 2D-positioned robot
+//! The [`crate::robot::Robot`] struct represents a simple 2D-positioned robot
 //! that can move in four directions with boundary enforcement.
 
 use crate::moveable::{Direction, Moveable, MovementError};

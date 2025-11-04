@@ -1,4 +1,4 @@
-#![doc = include_str!("../README.md")]
+#![cfg_attr(not(doctest), doc = include_str!("../README.md"))]
 #![warn(clippy::unwrap_used)]
 #![warn(clippy::expect_used)]
 #![warn(clippy::panic)]
