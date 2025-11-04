@@ -17,7 +17,8 @@
 // note: You need to use the Moveable trait here, otherwise no access to the trait fn
 use crate::moveable::{Direction, Moveable};
 use crate::robot::Robot;
-
+use env_logger::{self, Env};
+use log::{debug, error, info, trace};
 /// Runs a sample sequence of robot movements.
 ///
 /// This is the main demonstration function of the crate.
@@ -27,28 +28,30 @@ use crate::robot::Robot;
 /// # Panics
 /// Panics if any `unwrap()` operation fails (used for demonstration purposes only).
 pub fn run() {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+
     let mut robot = Robot::new("wall-e".to_string()); // changed to mut to use move_robot
-    println!("Display output {robot}");
-    println!("Debug output {robot:?}\n");
+    info!("Display output {robot}");
+    info!("Debug output {robot:?}\n");
 
     let r = robot.move_robot(Direction::Forward { step: 4 });
     // use if-let to print the error
     if let Err(e) = r {
-        println!("Movement Error: {e:?}");
+        error!("Movement Error: {e:?}");
     }
-    println!("{robot}");
+    debug!("{robot}");
     // use inspect_err to print the error but ignore it
     let _ = robot
         .move_robot(Direction::Forward { step: 5 })
-        .inspect_err(|e| println!("Movement Error {e:?}"));
+        .inspect_err(|e| error!("Movement Error {e:?}"));
 
-    println!("{robot}");
-    robot.move_robot(Direction::Forward { step: 2 });
+    debug!("{robot}");
+    let _ = robot.move_robot(Direction::Forward { step: 2 });
     let _ = robot.move_robot(Direction::Left);
-    println!("{robot}");
+    trace!("{robot}");
     let _ = robot.move_robot(Direction::Backwards);
-    println!("{robot}");
+    info!("{robot}");
     let _ = robot.move_robot(Direction::Right);
     let _ = robot.move_robot(Direction::Right);
-    println!("{robot}");
+    info!("{robot}");
 }
