@@ -1,0 +1,148 @@
+//! Concrete robot implementation using the [`crate::moveable::Moveable`] trait.
+//!
+//! The [`crate::robot::Robot`] struct represents a simple 2D-positioned robot
+//! that can move in four directions with boundary enforcement.
+
+use crate::{
+    moveable::{Direction, Moveable, MovementError},
+    position::Position,
+};
+use serde::{Deserialize, Serialize};
+use std::fmt;
+
+/// A simple movable robot with a name and 2D position.
+///
+/// The robot starts at coordinates (0, 0) and implements
+/// the [`Moveable`] trait to handle directional changes.
+///
+/// # Example
+/// ```rust
+/// use robot_control::moveable::{Direction, Moveable};
+/// use robot_control::robot::Robot;
+///
+/// let mut bot = Robot::new("Rusty".to_string());
+/// bot.move_robot(Direction::Forward { step: 2 }).unwrap();
+/// assert_eq!(format!("{}", bot), "(Robot name: Rusty Position: 0, 2)");
+/// ```
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Robot {
+    pub name: String,
+    pub position: Position,
+}
+
+impl Robot {
+    /// Creates a new [`Robot`] with the given name at position `(0, 0)`.
+    ///
+    /// # Example
+    /// ```rust
+    /// let robot = Robot::new("robotname".to_string());
+    /// ```
+    pub fn new(name: String) -> Self {
+        Robot {
+            name,
+            position: Position { x: 0, y: 0 },
+        }
+    }
+}
+
+impl fmt::Display for Robot {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "(Robot name: {} Position: {})", self.name, self.position)
+    }
+}
+
+impl Moveable for Robot {
+    /// Moves the robot in the specified [`Direction`].
+    ///
+    /// # Errors
+    /// Returns [`MovementError::TooFar`] if the movement exceeds limits.
+    ///
+    /// # Example
+    /// ```rust
+    /// let mut robot = Robot::new("robotname".to_string());
+    /// robot.move_robot(Direction::Forward { step:3 })?;
+    /// ```
+    fn move_robot(&mut self, direction: Direction) -> Result<(), MovementError> {
+        match direction {
+            Direction::Forward { step } => {
+                if step > 3 {
+                    return Err(MovementError::TooFar);
+                }
+                self.position.y += step;
+            }
+            Direction::Backwards => self.position.y -= 1,
+            Direction::Left => self.position.x -= 1,
+            Direction::Right => self.position.x += 1,
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*; // imports symbols from parent module
+    use env_logger::{self, Env};
+    use log::info;
+
+    fn init() {
+        let _ = env_logger::Builder::from_env(Env::default().default_filter_or("info"))
+            .is_test(true)
+            .try_init();
+        info!("Logging is active");
+    }
+
+    #[test]
+    fn move_robot_too_far() {
+        init();
+        let mut robot = Robot::new("rusty-test".to_string());
+        // assert defaults
+        assert_eq!(robot.position, Position { x: 0, y: 0 });
+        // make the change
+        assert_eq!(
+            robot.move_robot(Direction::Forward { step: 5 }),
+            Err(MovementError::TooFar)
+        );
+        // assert the not changed values
+        assert_eq!(robot.position, Position { x: 0, y: 0 });
+    }
+
+    #[test]
+    fn move_robot_limit() {
+        init();
+        let mut robot = Robot::new("rusty-test".to_string());
+        // assert defaults
+        assert_eq!(robot.position, Position { x: 0, y: 0 });
+        // make the change
+        assert!(robot.move_robot(Direction::Forward { step: 3 }).is_ok());
+        // assert the not changed values
+        assert_eq!(robot.position, Position { x: 0, y: 3 });
+    }
+
+    #[test]
+    fn move_robot_neg() {
+        init();
+        let mut robot = Robot::new("rusty-test".to_string());
+        // assert defaults
+        assert_eq!(robot.position, Position { x: 0, y: 0 });
+        // make the change
+        assert!(robot.move_robot(Direction::Forward { step: -1 }).is_err());
+        // assert the not changed values
+        assert_eq!(robot.position, Position { x: 0, y: 0 });
+    }
+
+    #[test]
+    fn move_robot_neg_far() {
+        init();
+        let mut robot = Robot::new("rusty-test".to_string());
+        // assert defaults
+        assert_eq!(robot.position, Position { x: 0, y: 0 });
+        // make the change
+        assert!(
+            robot
+                .move_robot(Direction::Forward { step: -1000 })
+                .is_err()
+        );
+        // assert the not changed values
+        assert_eq!(robot.position, Position { x: 0, y: 0 });
+    }
+}
